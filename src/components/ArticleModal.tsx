@@ -68,7 +68,7 @@ export default function ArticleModal({ article, onClose }: Props) {
           </div>
 
           {/* Body — two columns */}
-          <div className="columns-2 gap-6 text-sm leading-relaxed text-stone-800 font-serif text-justify">
+          <div className="gap-6 text-sm leading-relaxed text-stone-800 font-serif text-justify">
             {article.fullText.map((paragraph, i) => (
               <p key={i} className="mb-4 break-inside-avoid">
                 {paragraph}
@@ -76,11 +76,22 @@ export default function ArticleModal({ article, onClose }: Props) {
             ))}
           </div>
 
-          {/* Footer rule */}
+          {/* Footer rule + original link */}
           <div className="flex items-center gap-3 mt-6">
             <div className="h-px flex-1 bg-stone-400" />
             <span className="text-stone-400 text-xs">✦</span>
             <div className="h-px flex-1 bg-stone-400" />
+          </div>
+
+          <div className="mt-4 text-center">
+            <a
+              href={article.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] tracking-[0.2em] uppercase text-stone-500 hover:text-stone-800 transition-colors"
+            >
+              Read original source →
+            </a>
           </div>
         </div>
 

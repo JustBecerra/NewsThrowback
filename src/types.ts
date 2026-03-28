@@ -1,5 +1,5 @@
 export interface Article {
-  id: number
+  id: string
   headline: string
   subheadline: string
   snippet: string
@@ -8,6 +8,7 @@ export interface Article {
   location: string
   author: string
   edition: string
+  url: string
   fullText: string[]
 }
 

@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import type { Article, Status } from './types'
-import { MOCK_ARTICLES } from './data/mockArticles'
+import { fetchArticles, type ArticleSearchParams } from './api/articles'
 import PageHeader from './components/PageHeader'
 import SearchForm from './components/SearchForm'
 import ArticleList from './components/ArticleList'
@@ -10,19 +11,25 @@ function App() {
   const [word, setWord] = useState('')
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate] = useState('')
-  const [status, setStatus] = useState<Status>('idle')
-  const [articles, setArticles] = useState<Article[]>([])
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null)
+  const [searchParams, setSearchParams] = useState<ArticleSearchParams | null>(null)
+
+  const { data: articles = [], isFetching, error } = useQuery({
+    queryKey: ['articles', searchParams],
+    queryFn: () => fetchArticles(searchParams!),
+    enabled: !!searchParams,
+    retry: 1,
+  })
+  console.log(articles, error)
+  const status: Status = !searchParams ? 'idle' : isFetching ? 'loading' : 'done'
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setStatus('loading')
-    setArticles([])
-
-    setTimeout(() => {
-      setArticles(MOCK_ARTICLES)
-      setStatus('done')
-    }, 1800)
+    setSearchParams({
+      keyword: word,
+      from: fromDate ? fromDate.split('-')[0] : '',
+      to: toDate ? toDate.split('-')[0] : '',
+    })
   }
 
   return (
@@ -38,11 +45,19 @@ function App() {
         onToDateChange={setToDate}
         onSubmit={handleSubmit}
       />
+
+      {error && (
+        <p className="mt-8 text-red-400 text-xs tracking-wider">
+          {(error as Error).message}
+        </p>
+      )}
+
       <ArticleList
         status={status}
         articles={articles}
         onArticleClick={setSelectedArticle}
       />
+
       <footer className="mt-12 text-stone-700 text-xs tracking-wider">
         Drawn from historical newspaper records
       </footer>
